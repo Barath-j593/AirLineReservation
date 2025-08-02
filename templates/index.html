@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+
+{% block title %}ABC Airlines - Book Your Next Adventure{% endblock %}
+
+{% block content %}
+<div class="hero-section bg-dark text-white p-5 rounded mb-5">
+    <div class="row align-items-center">
+        <div class="col-md-6">
+            <h1 class="display-4">Your journey begins with us</h1>
+            <p class="lead">Discover new horizons with ABC Airlines. Book your next adventure today.</p>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Find Your Flight</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" action="{{ url_for('index') }}">
+                        {{ form.hidden_tag() }}
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="{{ form.origin.id }}" class="form-label">From</label>
+                                {{ form.origin(class="form-select") }}
+                                {% for error in form.origin.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.destination.id }}" class="form-label">To</label>
+                                {{ form.destination(class="form-select") }}
+                                {% for error in form.destination.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="{{ form.departure_date.id }}" class="form-label">Departure Date</label>
+                                {{ form.departure_date(class="form-control", type="date") }}
+                                {% for error in form.departure_date.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-6">
+                                <label for="{{ form.passengers.id }}" class="form-label">Passengers</label>
+                                {{ form.passengers(class="form-control", min=1, max=9) }}
+                                {% for error in form.passengers.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid">
+                            {{ form.submit(class="btn btn-primary") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Travel Recommendation Modal -->
+<div class="modal fade" id="travelModal" tabindex="-1" aria-labelledby="travelModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="travelModalLabel">Travel Recommendations</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="recommendationForm">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="mb-3">
+                        <label for="country" class="form-label">Country</label>
+                        <select class="form-select" id="country" name="country" required>
+                            <option value="India">India</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="budget" class="form-label">Budget (INR)</label>
+                        <input type="number" class="form-control" id="budget" name="budget" min="1000" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="travel_date" class="form-label">Travel Date</label>
+                        <input type="date" class="form-control" id="travel_date" name="travel_date" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="highlights" class="form-label">Interests (e.g., beaches, history)</label>
+                        <input type="text" class="form-control" id="highlights" name="highlights" placeholder="Optional">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Get Recommendations</button>
+                </form>
+                <div id="results" class="mt-3"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-5">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-plane fa-3x mb-3 text-primary"></i>
+                <h5 class="card-title">Wide Network</h5>
+                <p class="card-text">Fly to over 100 destinations worldwide with our extensive network of routes.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-medal fa-3x mb-3 text-primary"></i>
+                <h5 class="card-title">Award-Winning Service</h5>
+                <p class="card-text">Experience our award-winning service and comfort on every journey.</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-shield-alt fa-3x mb-3 text-primary"></i>
+                <h5 class="card-title">Safe Travel</h5>
+                <p class="card-text">Your safety is our top priority with rigorous safety protocols.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="popular-destinations mb-5">
+    <h2 class="text-center mb-4">Popular Destinations</h2>
+    <div class="row">
+        <div class="col-md-3 mb-4">
+            <div class="card destination-card">
+                <div class="card-body">
+                    <h5 class="card-title">New York</h5>
+                    <p class="card-text">Experience the vibrant life of the Big Apple.</p>
+                    <a href="#" class="btn btn-sm btn-outline-primary" 
+                       onclick="setDestination('JFK'); return false;">Find flights</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card destination-card">
+                <div class="card-body">
+                    <h5 class="card-title">London</h5>
+                    <p class="card-text">Discover the historic charm of England's capital.</p>
+                    <a href="#" class="btn btn-sm btn-outline-primary" 
+                       onclick="setDestination('LHR'); return false;">Find flights</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card destination-card">
+                <div class="card-body">
+                    <h5 class="card-title">Tokyo</h5>
+                    <p class="card-text">Immerse yourself in Japan's unique culture.</p>
+                    <a href="#" class="btn btn-sm btn-outline-primary" 
+                       onclick="setDestination('HND'); return false;">Find flights</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="card destination-card">
+                <div class="card-body">
+                    <h5 class="card-title">Sydney</h5>
+                    <p class="card-text">Enjoy the beautiful beaches and iconic Opera House.</p>
+                    <a href="#" class="btn btn-sm btn-outline-primary" 
+                       onclick="setDestination('SYD'); return false;">Find flights</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="loyalty-program bg-dark text-white p-5 rounded">
+    <div class="row">
+        <div class="col-md-8">
+            <h2>Join Our Loyalty Program</h2>
+            <p class="lead">Earn points with every flight and enjoy exclusive benefits, upgrades, and free flights.</p>
+            {% if current_user.is_authenticated %}
+            <a href="{{ url_for('profile') }}" class="btn btn-outline-light">View Your Points</a>
+            {% else %}
+            <a href="{{ url_for('register') }}" class="btn btn-outline-light">Sign Up Now</a>
+            {% endif %}
+        </div>
+        <div class="col-md-4 text-center">
+            <i class="fas fa-gift fa-5x"></i>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function setDestination(code) {
+        document.getElementById('destination').value = code;
+        document.querySelector('.card-header').scrollIntoView({ behavior: 'smooth' });
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const dateInput = document.getElementById('departure_date');
+        if (dateInput && !dateInput.value) {
+            dateInput.valueAsDate = tomorrow;
+        }
+    });
+
+    document.getElementById("recommendationForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        try {
+            const response = await fetch("/recommendations", {
+                method: "POST",
+                headers: {
+                    "X-CSRF-Token": formData.get("csrf_token")
+                },
+                body: formData
+            });
+            const text = await response.text(); // Read the body once
+            let results;
+            try {
+                results = JSON.parse(text); // Attempt to parse as JSON
+            } catch (e) {
+                throw new Error(`Invalid JSON response: ${text.substring(0, 50)}...`);
+            }
+            const resultsDiv = document.getElementById("results");
+            if (response.ok) {
+                resultsDiv.innerHTML = results.length ? 
+                    results.map(r => `
+                        <div class="card mb-2">
+                            <div class="card-body">
+                                <h5 class="card-title">${r.Destination}, ${r.State}</h5>
+                                <p class="card-text">Budget: ₹${r.Min_Budget} - ₹${r.Max_Budget}</p>
+                                <p class="card-text">Highlights: ${r.Highlights}</p>
+                            </div>
+                        </div>
+                    `).join("") :
+                    "<p>No destinations match your criteria.</p>";
+            } else {
+                resultsDiv.innerHTML = `<p>Error: ${results.error || text}</p>`;
+            }
+        } catch (error) {
+            document.getElementById("results").innerHTML = `<p>Error: ${error.message}</p>`;
+        }
+    });
+</script>
+{% endblock %}

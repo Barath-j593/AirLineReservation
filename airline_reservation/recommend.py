@@ -1,4 +1,4 @@
-from destinations import load_destinations
+from .destinations import load_destinations
 
 def get_recommendations(budget, travel_month, highlights=None):
     """Get recommendations based on budget, time, and highlights."""

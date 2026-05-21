@@ -1,8 +1,8 @@
-from models import User, Flight, Booking, Passenger, Seat
+from .models import User, Flight, Booking, Passenger, Seat
 from werkzeug.security import generate_password_hash
 from datetime import datetime, timedelta, date
 import random
-from extensions import db
+from .extensions import db
 
 # Airport data
 airports = {

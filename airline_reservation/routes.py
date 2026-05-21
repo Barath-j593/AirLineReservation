@@ -1,18 +1,17 @@
 from flask import render_template, redirect, url_for, flash, request, session, jsonify
-from data import get_user_by_id, get_flight_by_id
+from . import data
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, logout_user, login_required, current_user
-from app import app, mail  # Import app and mail
-from extensions import db
-from utils import send_booking_confirmation, send_booking_cancellation_email, generate_booking_reference, format_datetime, format_date, format_time, format_price, calculate_flight_duration, get_flight_status_badge_class
-from models import User, Flight, Booking, Passenger, Seat
-from forms import LoginForm, RegisterForm, FlightSearchForm, BookingForm, BookingSearchForm, AdminFlightForm
+from .app import app, mail
+from .extensions import db
+from .utils import send_booking_confirmation, send_booking_cancellation_email, generate_booking_reference, format_datetime, format_date, format_time, format_price, calculate_flight_duration, get_flight_status_badge_class
+from .models import User, Flight, Booking, Passenger, Seat
+from .forms import LoginForm, RegisterForm, FlightSearchForm, BookingForm, BookingSearchForm, AdminFlightForm
 import razorpay
 import os
 from dotenv import load_dotenv
 import logging
 from datetime import datetime, timedelta, date
-import data
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -389,7 +388,7 @@ def admin_dashboard():
         flash('Access denied', 'danger')
         return redirect(url_for('index'))
     total_flights = Flight.query.count()
-    active_flights = Flight.query.filter(Flight.status.notin_(["Completed", "Cancelled"])).count()
+    active_flights = Flight.query.filter(Flight.status.notin_(["Completed", "Cancelled"])) .count()
     total_bookings = Booking.query.count()
     active_bookings = Booking.query.filter_by(status="Confirmed").count()
     total_users = User.query.count()
@@ -548,8 +547,8 @@ def admin_bookings():
         pagination=pagination,
         search=search,
         status=status,
-        get_user_by_id=get_user_by_id,
-        get_flight_by_id=get_flight_by_id,
+        get_user_by_id=data.get_user_by_id,
+        get_flight_by_id=data.get_flight_by_id,
         format_datetime=format_datetime,
         form=form
     )

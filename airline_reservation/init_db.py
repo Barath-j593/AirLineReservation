@@ -1,8 +1,8 @@
 import json
-from app import app
-from extensions import db
-from data import initialize_data
-from models import User
+from ..app import app
+from .extensions import db
+from .data import initialize_data
+from .models import User
 from datetime import datetime
 
 with app.app_context():

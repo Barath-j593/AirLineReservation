@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 import random
 import string
-from data import airports, get_airport_city
+from .data import airports, get_airport_city
 from flask import current_app
 from flask_mail import Message
 
@@ -95,7 +95,7 @@ def get_booking_status_badge_class(status):
 
 def send_booking_confirmation(user, booking, mail):
     """Send a booking confirmation email to the user"""
-    from data import get_flight_by_id
+    from .data import get_flight_by_id
     flight = get_flight_by_id(booking.flight_id)
     msg = Message(
         'Flight Booking Confirmation',
@@ -109,33 +109,7 @@ def send_booking_confirmation(user, booking, mail):
     except Exception as e:
         current_app.logger.error(f"Email sending failed: {e}")
         return False
-'''
-def send_flight_cancellation_email(user, booking, flight, mail):
-    """Send a flight cancellation email to the user"""
-    msg = Message(
-        'Flight Cancellation Notification',
-        recipients=[user.email],
-        body=f"""Dear {user.username},
 
-We regret to inform you that your flight {flight.flight_number} from {get_airport_city(flight.origin)} to {get_airport_city(flight.destination)} scheduled for {format_datetime(flight.departure_time)} has been cancelled.
-
-Booking Reference: {booking.booking_reference}
-Status: Cancelled
-
-Please contact our support team at support@airwaysabc.com or call +1-800-555-1234 for assistance with rebooking or refunds.
-
-Thank you for your understanding,
-Airways ABC Team"""
-    )
-    try:
-        with current_app.app_context():
-            mail.send(msg)
-        current_app.logger.info(f"Cancellation email sent to {user.email} for booking {booking.booking_reference}")
-        return True
-    except Exception as e:
-        current_app.logger.error(f"Failed to send cancellation email to {user.email}: {e}")
-        return False
-   ''' 
 def send_booking_cancellation_email(user, booking, flight, mail):
     """Send a booking cancellation email to the user"""
     msg = Message(

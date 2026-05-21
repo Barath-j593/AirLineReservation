@@ -1,7 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from datetime import datetime
-from extensions import db
+from .extensions import db
 
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
@@ -33,7 +33,7 @@ class Flight(db.Model):
     bookings = db.relationship('Booking', backref='flight', lazy=True)
 
     def get_duration(self):
-        from utils import format_duration, calculate_flight_duration
+        from .utils import format_duration, calculate_flight_duration
         return format_duration(calculate_flight_duration(self.departure_time, self.arrival_time))
 
     def get_current_price(self):
